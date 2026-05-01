@@ -15,8 +15,6 @@ services:
         fromDatabase:
           name: iabe-db
           property: connectionString
-      - key: PYTHON_VERSION
-        value: "3.11.9"
 
 databases:
   - name: iabe-db
