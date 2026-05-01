@@ -1,0 +1,211 @@
+{% load static i18n %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}IABE{% endblock %} — Association Internationale pour l'Éducation Bilingue</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['DM Sans', 'sans-serif'] },
+                    colors: {
+                        primary: { 50:'#edf1f9',100:'#dce4f3',200:'#b8c9e7',300:'#8ba5d5',400:'#5d80c3',500:'#1B3A6B',600:'#183362',700:'#142b55',800:'#122349',900:'#0e1b3d' },
+                        accent: { 50:'#fef9ec',100:'#fef3dc',200:'#fde4b0',300:'#fcd37a',400:'#f9bd3e',500:'#C97C0A',600:'#b57009',700:'#986007',800:'#7a4e06',900:'#5c3a04' },
+                        iabe: { green:'#1A7F5A', gold:'#C97C0A', blue:'#1B3A6B', navy:'#1B3A6B' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <div class="container" style="display:flex;justify-content:space-between;align-items:center;">
+            <div style="display:flex;gap:1.5rem;align-items:center;">
+                <a href="mailto:contact@iabe-ci.org"><i class="fas fa-envelope" style="margin-right:.35rem;"></i>contact@iabe-ci.org</a>
+                <a href="tel:+2250700000000" style="display:none;" class="topbar-phone"><i class="fas fa-phone" style="margin-right:.35rem;"></i>+225 07 00 00 00</a>
+            </div>
+            <div style="display:flex;gap:1rem;align-items:center;">
+                <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://tiktok.com" target="_blank" rel="noopener" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                <span style="width:1px;height:14px;background:rgba(255,255,255,.2);display:inline-block;"></span>
+                <form method="post" action="{% url 'set_language' %}" style="display:inline;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
+                    {% get_current_language as CURRENT_LANGUAGE %}
+                    {% if CURRENT_LANGUAGE == 'fr' %}
+                        <button type="submit" name="language" value="en" style="background:none;border:none;color:rgba(255,255,255,.75);cursor:pointer;font-size:.8rem;font-weight:600;padding:0;">EN</button>
+                    {% else %}
+                        <button type="submit" name="language" value="fr" style="background:none;border:none;color:rgba(255,255,255,.75);cursor:pointer;font-size:.8rem;font-weight:600;padding:0;">FR</button>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar" id="main-navbar">
+        <div class="container navbar-inner">
+            <!-- Logo -->
+            <a href="{% url 'core:home' %}" class="logo" style="display:flex;align-items:center;gap:.5rem;">
+                <img src="{% static 'images/logo.png' %}" alt="IABE" style="height:52px;width:auto;object-fit:contain;">
+            </a>
+
+            <!-- Desktop Nav -->
+            <div class="nav-links" id="nav-links">
+                <a href="{% url 'core:home' %}" class="nav-link">Accueil</a>
+                <a href="{% url 'core:about' %}" class="nav-link">À propos</a>
+                <a href="{% url 'programs:list' %}" class="nav-link">Programmes</a>
+                <a href="{% url 'events:list' %}" class="nav-link">Événements</a>
+                <a href="{% url 'tombola:list' %}" class="nav-link nav-link-tombola">
+                    <i class="fas fa-ticket-alt" style="font-size:.8rem;"></i> Bourse d'immersion
+                </a>
+                <a href="{% url 'blog:list' %}" class="nav-link">Blog</a>
+                <a href="{% url 'core:contact' %}" class="nav-link">Contact</a>
+            </div>
+
+            <!-- Auth -->
+            <div class="nav-actions">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'members:dashboard' %}" class="btn-ghost" style="display:flex;align-items:center;gap:.4rem;">
+                        <i class="fas fa-user-circle" style="color:var(--navy);"></i>
+                        {{ user.first_name|default:user.username }}
+                    </a>
+                    <a href="{% url 'members:logout' %}" class="btn btn-outline btn-sm">Déconnexion</a>
+                {% else %}
+                    <a href="{% url 'members:login' %}" class="btn-ghost">Connexion</a>
+                    <a href="{% url 'members:register' %}" class="btn btn-primary btn-sm">Adhérer</a>
+                {% endif %}
+                <!-- Mobile toggle -->
+                <button id="mobile-toggle" aria-label="Menu" style="display:none;background:none;border:1px solid var(--border);border-radius:var(--radius);padding:.45rem .625rem;cursor:pointer;">
+                    <i class="fas fa-bars" style="color:var(--gray-700);"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" style="display:none;border-top:1px solid var(--border);background:var(--white);">
+            <div class="container" style="padding-top:1rem;padding-bottom:1rem;display:flex;flex-direction:column;gap:.25rem;">
+                <a href="{% url 'core:home' %}" class="nav-link">Accueil</a>
+                <a href="{% url 'core:about' %}" class="nav-link">À propos</a>
+                <a href="{% url 'programs:list' %}" class="nav-link">Programmes</a>
+                <a href="{% url 'events:list' %}" class="nav-link">Événements</a>
+                <a href="{% url 'tombola:list' %}" class="nav-link nav-link-tombola">Bourse d'immersion</a>
+                <a href="{% url 'blog:list' %}" class="nav-link">Blog</a>
+                <a href="{% url 'core:contact' %}" class="nav-link">Contact</a>
+                <hr class="divider">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'members:dashboard' %}" class="nav-link">Mon espace</a>
+                    <a href="{% url 'members:logout' %}" class="nav-link">Déconnexion</a>
+                {% else %}
+                    <a href="{% url 'members:login' %}" class="nav-link">Connexion</a>
+                    <a href="{% url 'members:register' %}" class="btn btn-primary" style="margin-top:.5rem;justify-content:center;">Adhérer</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages système -->
+    {% if messages %}
+    <div class="container" style="margin-top:1rem;">
+        {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% elif message.tags == 'error' %}alert-error{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %}">
+            <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-times-circle{% elif message.tags == 'warning' %}fa-exclamation-triangle{% else %}fa-info-circle{% endif %}" style="flex-shrink:0;"></i>
+            <span>{{ message }}</span>
+            <button onclick="this.parentElement.remove()" aria-label="Fermer" style="margin-left:auto;background:none;border:none;cursor:pointer;color:currentColor;opacity:.6;font-size:.875rem;"><i class="fas fa-times"></i></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Contenu principal -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer style="background:var(--gray-900);color:rgba(255,255,255,.65);margin-top:5rem;">
+        <div class="container" style="padding-top:3.5rem;padding-bottom:3.5rem;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2.5rem;">
+
+                <!-- Identité -->
+                <div>
+                    <div style="display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;">
+                        <img src="{% static 'images/logo.png' %}" alt="IABE" style="height:44px;width:auto;object-fit:contain;filter:brightness(0) invert(1);">
+                    </div>
+                    <p style="font-size:.85rem;line-height:1.7;margin-bottom:1.25rem;">Association Internationale pour l'Éducation Bilingue. Côte d'Ivoire — Ghana — Afrique de l'Ouest.</p>
+                    <div style="display:flex;gap:.625rem;">
+                        <a href="#" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:.85rem;transition:background var(--transition);" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.08)'"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:.85rem;transition:background var(--transition);" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.08)'"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:.85rem;transition:background var(--transition);" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.08)'"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" style="width:34px;height:34px;background:rgba(255,255,255,.08);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.65);font-size:.85rem;transition:background var(--transition);" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.08)'"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <p style="color:#fff;font-size:.8125rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;">Navigation</p>
+                    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;">
+                        <li><a href="{% url 'core:about' %}" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">À propos de l'IABE</a></li>
+                        <li><a href="{% url 'programs:list' %}" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Programmes d'immersion</a></li>
+                        <li><a href="{% url 'events:list' %}" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Événements & Convention</a></li>
+                        <li><a href="{% url 'tombola:list' %}" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Bourse d'immersion</a></li>
+                        <li><a href="{% url 'blog:list' %}" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Blog & ressources</a></li>
+                    </ul>
+                </div>
+
+                <!-- Programmes -->
+                <div>
+                    <p style="color:#fff;font-size:.8125rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;">Programmes</p>
+                    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.5rem;">
+                        <li><a href="{% url 'programs:list' %}?type=homestay" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Familles d'accueil</a></li>
+                        <li><a href="{% url 'programs:list' %}?type=camp" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Camps de vacances</a></li>
+                        <li><a href="{% url 'programs:list' %}?type=exchange" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Échanges scolaires</a></li>
+                        <li><a href="{% url 'programs:list' %}?type=teacher_training" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Formation enseignants</a></li>
+                        <li><a href="{% url 'members:register' %}" style="font-size:.875rem;color:rgba(255,255,255,.65);text-decoration:none;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.65)'">Inscrire mon école</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact -->
+                <div>
+                    <p style="color:#fff;font-size:.8125rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1rem;">Contact</p>
+                    <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.75rem;">
+                        <li style="display:flex;gap:.625rem;align-items:flex-start;font-size:.875rem;">
+                            <i class="fas fa-map-marker-alt" style="color:var(--green);margin-top:.2rem;width:1rem;"></i>
+                            <span>Abidjan, Plateau<br>Côte d'Ivoire</span>
+                        </li>
+                        <li style="display:flex;gap:.625rem;align-items:center;font-size:.875rem;">
+                            <i class="fas fa-phone" style="color:var(--green);width:1rem;"></i>
+                            <a href="tel:+2250700000000" style="color:rgba(255,255,255,.65);text-decoration:none;">+225 07 00 00 00</a>
+                        </li>
+                        <li style="display:flex;gap:.625rem;align-items:center;font-size:.875rem;">
+                            <i class="fas fa-envelope" style="color:var(--green);width:1rem;"></i>
+                            <a href="mailto:contact@iabe-ci.org" style="color:rgba(255,255,255,.65);text-decoration:none;">contact@iabe-ci.org</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div style="border-top:1px solid rgba(255,255,255,.08);">
+            <div class="container" style="padding-top:1.25rem;padding-bottom:1.25rem;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.75rem;font-size:.8125rem;">
+                <span>&copy; {% now "Y" %} IABE — Tous droits réservés</span>
+                <span style="color:rgba(255,255,255,.4);">ONG pour l'éducation bilingue en Afrique de l'Ouest</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

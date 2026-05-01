@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="dot-pattern"></div>
+    <div class="container text-center relative" style="z-index:1;">
+        <h1 class="fade-in-up">Connexion</h1>
+        <p class="mt-2 fade-in-up delay-1">Accédez à votre espace membre IABE</p>
+    </div>
+</section>
+
+<section class="py-16 section-decorated" style="background:var(--gray-50);min-height:50vh;">
+    <div class="max-w-md mx-auto px-4" style="position:relative;z-index:1;">
+        <div class="bg-white rounded-2xl p-8 md:p-10 shadow-lg border border-gray-100 reveal" style="position:relative;overflow:hidden;">
+            <div class="deco-dots" style="width:80px;height:80px;top:-1rem;right:-1rem;"></div>
+            <div class="text-center mb-8" style="position:relative;z-index:1;">
+                <div style="width:56px;height:56px;border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--navy),var(--green));display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-lock" style="color:#fff;font-size:1.1rem;"></i>
+                </div>
+                <h2 class="text-xl font-bold text-gray-900">Bienvenue</h2>
+                <p style="font-size:.85rem;color:var(--gray-500);margin-top:.25rem;">Connectez-vous à votre compte IABE</p>
+            </div>
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                <div class="alert alert-error">
+                    <i class="fas fa-exclamation-circle flex-shrink-0"></i>
+                    <div>
+                        {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                <div>
+                    <label class="form-label">Nom d'utilisateur</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}<p class="text-red-500 text-xs mt-1">{{ form.username.errors.0 }}</p>{% endif %}
+                </div>
+                <div>
+                    <label class="form-label">Mot de passe</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}<p class="text-red-500 text-xs mt-1">{{ form.password.errors.0 }}</p>{% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary w-full py-3.5 text-base">
+                    <i class="fas fa-sign-in-alt"></i> Se connecter
+                </button>
+            </form>
+            <p class="text-center text-gray-500 text-sm mt-6">
+                Pas encore membre ? <a href="{% url 'members:register' %}" class="text-primary-600 font-semibold hover:text-primary-800 transition">Inscrivez-vous</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}

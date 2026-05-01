@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Programmes d'Immersion{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="dot-pattern"></div>
+    <div class="container text-center relative" style="z-index:1;">
+        <h1 class="fade-in-up">Programmes d'Immersion</h1>
+        <p class="mt-3 text-lg max-w-2xl mx-auto fade-in-up delay-1">Séjours structurés pour apprendre l'anglais en immersion totale au Ghana</p>
+    </div>
+</section>
+
+<section class="py-12 section-decorated">
+    <div class="max-w-7xl mx-auto px-4" style="position:relative;z-index:1;">
+        <!-- Filters -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-10 reveal" style="position:relative;overflow:hidden;">
+            <div class="deco-dots" style="width:60px;height:60px;top:.75rem;right:.75rem;"></div>
+            <div class="mb-5">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Type de programme</p>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{% url 'programs:list' %}{% if current_destination %}?destination={{ current_destination }}{% endif %}" class="px-4 py-2 rounded-lg font-semibold text-sm transition-all {% if not current_type %}btn-primary{% else %}bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:border-gray-300{% endif %}">
+                        Tous
+                    </a>
+                    {% for code, label in program_types %}
+                    <a href="{% url 'programs:list' %}?type={{ code }}{% if current_destination %}&destination={{ current_destination }}{% endif %}" class="px-4 py-2 rounded-lg font-semibold text-sm transition-all {% if current_type == code %}btn-primary{% else %}bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100 hover:border-gray-300{% endif %}">
+                        {{ label }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Destination</p>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{% url 'programs:list' %}{% if current_type %}?type={{ current_type }}{% endif %}" class="px-4 py-2 rounded-lg font-semibold text-sm transition-all {% if not current_destination %}bg-iabe-green text-white shadow-sm{% else %}bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100{% endif %}">
+                        Toutes
+                    </a>
+                    {% for code, label in destinations %}
+                    <a href="{% url 'programs:list' %}?destination={{ code }}{% if current_type %}&type={{ current_type }}{% endif %}" class="px-4 py-2 rounded-lg font-semibold text-sm transition-all {% if current_destination == code %}bg-iabe-green text-white shadow-sm{% else %}bg-gray-50 text-gray-600 border border-gray-200 hover:bg-gray-100{% endif %}">
+                        {{ label }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Programs Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-7">
+            {% for program in programs %}
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 hover-lift reveal">
+                <div class="h-52 relative overflow-hidden">
+                    {% if program.image %}
+                        <img src="{{ program.image.url }}" alt="{{ program.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    {% else %}
+                        <div class="img-placeholder{% cycle '' ' green' ' amber' %}" style="height:100%;">
+                            <i class="fas fa-{% cycle 'plane-departure' 'home' 'campground' 'exchange-alt' 'chalkboard-teacher' %}"></i>
+                        </div>
+                    {% endif %}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        <span class="badge badge-green text-xs"><i class="fas fa-map-marker-alt mr-1"></i>{{ program.get_destination_display }}</span>
+                        <span class="badge" style="background:rgba(255,255,255,.9);color:var(--gray-700);">{{ program.get_program_type_display }}</span>
+                    </div>
+                    <div class="absolute bottom-4 right-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--navy);box-shadow:var(--shadow);">{{ program.cost|intcomma }} FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3 text-sm text-gray-500">
+                        <span><i class="fas fa-clock mr-1 text-gray-400"></i>{{ program.duration }}</span>
+                        {% if program.start_date %}
+                        <span><i class="fas fa-calendar mr-1 text-gray-400"></i>{{ program.start_date|date:"M Y" }}</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-700 transition">{{ program.title }}</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{ program.description|truncatewords:25 }}</p>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                        <i class="fas fa-university w-4 text-gray-400"></i>
+                        <span>{{ program.partner_institution }}</span>
+                    </div>
+                    {% if program.transport_partner %}
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                        <i class="fas fa-bus w-4 text-iabe-green"></i>
+                        <span>{{ program.transport_partner }}</span>
+                    </div>
+                    {% endif %}
+                    <a href="{% url 'programs:detail' program.slug %}" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;">
+                        Voir le programme <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Programmes exemples pour démonstration -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 hover-lift reveal">
+                <div class="h-52 relative overflow-hidden">
+                    <img src="{% static 'images/program-immersion.png' %}" alt="Immersion famille Ghana" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        <span class="badge badge-green text-xs"><i class="fas fa-map-marker-alt mr-1"></i>Ghana (Accra)</span>
+                        <span class="badge" style="background:rgba(255,255,255,.9);color:var(--gray-700);">Famille d'accueil</span>
+                    </div>
+                    <div class="absolute bottom-4 right-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--navy);box-shadow:var(--shadow);">450 000 FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3 text-sm text-gray-500">
+                        <span><i class="fas fa-clock mr-1 text-gray-400"></i>2 semaines</span>
+                        <span><i class="fas fa-calendar mr-1 text-gray-400"></i>Juil 2025</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-700 transition">Immersion en famille d'accueil - Accra</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">Vivez chez une famille ghanéenne anglophone sélectionnée. Cours du matin, activités culturelles l'après-midi.</p>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                        <i class="fas fa-university w-4 text-gray-400"></i>
+                        <span>Partenaire: Ghana Institute of Languages</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                        <i class="fas fa-bus w-4 text-iabe-green"></i>
+                        <span>Transport: STC Bus Abidjan-Accra</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;" onclick="alert('Programme exemple - Connectez-vous en tant que gestionnaire pour ajouter de vrais programmes'); return false;">
+                        Voir le programme <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 hover-lift reveal" style="transition-delay:.1s;">
+                <div class="h-52 relative overflow-hidden">
+                    <img src="{% static 'images/program-camp.png' %}" alt="Camp vacances Ghana" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        <span class="badge badge-green text-xs"><i class="fas fa-map-marker-alt mr-1"></i>Ghana (Kumasi)</span>
+                        <span class="badge" style="background:rgba(255,255,255,.9);color:var(--gray-700);">Camp de vacances</span>
+                    </div>
+                    <div class="absolute bottom-4 right-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--navy);box-shadow:var(--shadow);">380 000 FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3 text-sm text-gray-500">
+                        <span><i class="fas fa-clock mr-1 text-gray-400"></i>3 semaines</span>
+                        <span><i class="fas fa-calendar mr-1 text-gray-400"></i>Août 2025</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-700 transition">Camp d'été immersif - Kumasi</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">Séjour encadré pour collégiens et lycéens. Cours d'anglais intensifs, visites culturelles, sports.</p>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                        <i class="fas fa-university w-4 text-gray-400"></i>
+                        <span>Partenaire: Kwame Nkrumah University</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                        <i class="fas fa-bus w-4 text-iabe-green"></i>
+                        <span>Transport: STC Bus inclus</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;" onclick="alert('Programme exemple - Connectez-vous en tant que gestionnaire pour ajouter de vrais programmes'); return false;">
+                        Voir le programme <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 hover-lift reveal" style="transition-delay:.2s;">
+                <div class="h-52 relative overflow-hidden">
+                    <img src="{% static 'images/program-exchange.png' %}" alt="Échange scolaire" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        <span class="badge badge-green text-xs"><i class="fas fa-map-marker-alt mr-1"></i>Ghana / CI</span>
+                        <span class="badge" style="background:rgba(255,255,255,.9);color:var(--gray-700);">Échange scolaire</span>
+                    </div>
+                    <div class="absolute bottom-4 right-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--navy);box-shadow:var(--shadow);">290 000 FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3 text-sm text-gray-500">
+                        <span><i class="fas fa-clock mr-1 text-gray-400"></i>1 semaine</span>
+                        <span><i class="fas fa-calendar mr-1 text-gray-400"></i>Oct 2025</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-700 transition">Échange scolaire CI-Ghana</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">Échange structuré entre écoles partenaires. 5 jours dans une école ghanéenne avec famille d'accueil.</p>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                        <i class="fas fa-university w-4 text-gray-400"></i>
+                        <span>Partenaire: Accra International School</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                        <i class="fas fa-bus w-4 text-iabe-green"></i>
+                        <span>Transport: STC Bus inclus</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;" onclick="alert('Programme exemple - Connectez-vous en tant que gestionnaire pour ajouter de vrais programmes'); return false;">
+                        Voir le programme <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 hover-lift reveal" style="transition-delay:.3s;">
+                <div class="h-52 relative overflow-hidden">
+                    <img src="{% static 'images/program-training.png' %}" alt="Formation enseignants" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 left-4 flex gap-2">
+                        <span class="badge badge-green text-xs"><i class="fas fa-map-marker-alt mr-1"></i>Ghana (Accra)</span>
+                        <span class="badge" style="background:rgba(255,255,255,.9);color:var(--gray-700);">Formation</span>
+                    </div>
+                    <div class="absolute bottom-4 right-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--navy);box-shadow:var(--shadow);">150 000 FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex items-center gap-2 mb-3 text-sm text-gray-500">
+                        <span><i class="fas fa-clock mr-1 text-gray-400"></i>5 jours</span>
+                        <span><i class="fas fa-calendar mr-1 text-gray-400"></i>Nov 2025</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-700 transition">Perfectionnement enseignants</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">Stage de perfectionnement pour professeurs d'anglais. Méthodologie immersive et pratique de classe.</p>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                        <i class="fas fa-university w-4 text-gray-400"></i>
+                        <span>Partenaire: Ghana College of Education</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-gray-400 mb-3">
+                        <i class="fas fa-bus w-4 text-iabe-green"></i>
+                        <span>Transport: Non inclus</span>
+                    </div>
+                    <a href="#" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;" onclick="alert('Programme exemple - Connectez-vous en tant que gestionnaire pour ajouter de vrais programmes'); return false;">
+                        Voir le programme <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

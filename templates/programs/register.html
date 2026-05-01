@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Inscription - {{ program.title }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="dot-pattern"></div>
+    <div class="container relative" style="z-index:1;">
+        <a href="{% url 'programs:detail' program.slug %}" class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-4 transition">
+            <i class="fas fa-arrow-left text-xs"></i> Retour au programme
+        </a>
+        <h1 class="fade-in-up">Inscription au programme</h1>
+    </div>
+</section>
+
+<section class="py-12 section-decorated" style="background:var(--gray-50);">
+    <div class="max-w-2xl mx-auto px-4" style="position:relative;z-index:1;">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-6 reveal card-accent-green">
+            <h2 class="text-lg font-bold text-gray-900 mb-2">{{ program.title }}</h2>
+            <div class="flex flex-wrap gap-3 text-sm text-gray-500">
+                <span class="badge badge-green"><i class="fas fa-map-marker-alt mr-1"></i>{{ program.get_destination_display }}</span>
+                <span class="badge badge-gray"><i class="fas fa-clock mr-1"></i>{{ program.duration }}</span>
+                <span class="badge badge-navy"><i class="fas fa-university mr-1"></i>{{ program.partner_institution }}</span>
+            </div>
+            <div class="mt-4 p-4 rounded-xl" style="background:linear-gradient(135deg,var(--green-light),#d1f5e4);">
+                <span class="text-sm font-semibold" style="color:var(--green-dark);">Coût total</span>
+                <span class="block text-2xl font-extrabold" style="color:var(--green-dark);">{{ program.cost|intcomma }} FCFA</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 reveal" style="position:relative;overflow:hidden;">
+            <div class="deco-dots" style="width:80px;height:80px;top:-1rem;right:-1rem;"></div>
+            <h2 class="text-xl font-bold text-gray-900 mb-6" style="position:relative;z-index:1;">Informations de paiement</h2>
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle flex-shrink-0"></i>
+                    <span>Vous recevrez une demande de paiement Mobile Money. Validez pour confirmer votre inscription.</span>
+                </div>
+                <button type="submit" class="btn btn-green w-full py-3.5 text-base">
+                    <i class="fas fa-check-circle"></i> Confirmer l'inscription
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

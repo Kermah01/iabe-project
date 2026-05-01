@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Paiement Adhésion{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="dot-pattern"></div>
+    <div class="container relative" style="z-index:1;">
+        <a href="{% url 'members:dashboard' %}" class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-4 transition">
+            <i class="fas fa-arrow-left text-xs"></i> Tableau de bord
+        </a>
+        <h1 class="fade-in-up">Paiement Adhésion</h1>
+    </div>
+</section>
+
+<section class="py-12 section-decorated" style="background:var(--gray-50);">
+    <div class="max-w-2xl mx-auto px-4">
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center hover-lift reveal card-accent">
+                <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#dce8f7,#edf1f9);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+                    <i class="fas fa-id-card" style="color:var(--navy);"></i>
+                </div>
+                <h3 class="font-bold text-gray-900">Droit d'adhésion</h3>
+                <p class="text-3xl font-extrabold text-primary-700 mt-2">{{ prices.adhesion|intcomma }} FCFA</p>
+                <p class="text-gray-500 text-sm mt-1">Paiement unique</p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 text-center hover-lift reveal card-accent-green" style="transition-delay:.1s;">
+                <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--green-light),#d1f5e4);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+                    <i class="fas fa-sync-alt" style="color:var(--green);"></i>
+                </div>
+                <h3 class="font-bold text-gray-900">Cotisation annuelle</h3>
+                <p class="text-3xl font-extrabold text-iabe-green mt-2">{{ prices.annual|intcomma }} FCFA</p>
+                <p class="text-gray-500 text-sm mt-1">Par an</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 reveal" style="position:relative;overflow:hidden;">
+            <div class="deco-dots" style="width:80px;height:80px;top:-1rem;right:-1rem;"></div>
+            <h2 class="text-xl font-bold text-gray-900 mb-6" style="position:relative;z-index:1;">Effectuer un paiement</h2>
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle flex-shrink-0"></i>
+                    <span>Vous recevrez une demande de paiement sur votre téléphone. Validez le paiement pour finaliser.</span>
+                </div>
+                <button type="submit" class="btn btn-primary w-full py-3.5 text-base">
+                    <i class="fas fa-credit-card"></i> Payer maintenant
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

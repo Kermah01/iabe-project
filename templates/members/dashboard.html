@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Mon Espace{% endblock %}
+
+{% block content %}
+<section class="page-header" style="padding-bottom:5rem;">
+    <div class="dot-pattern"></div>
+    <div class="container relative" style="z-index:1;">
+        <h1 class="fade-in-up">Mon Espace</h1>
+        <p class="mt-1 fade-in-up delay-1">Gérez votre adhésion, programmes et documents</p>
+    </div>
+</section>
+
+<section class="bg-gray-50 min-h-screen" style="margin-top:-2.5rem; padding-bottom:4rem;">
+    <div class="max-w-7xl mx-auto px-4">
+        <!-- Profile Header Card -->
+        <div class="bg-white rounded-2xl p-6 md:p-8 shadow-lg border border-gray-100 mb-8 reveal">
+            <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="flex-shrink-0 overflow-hidden" style="width:64px;height:64px;border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--navy),var(--green));display:flex;align-items:center;justify-content:center;">
+                        {% if user.photo %}
+                            <img src="{{ user.photo.url }}" alt="{{ user.get_full_name }}" style="width:100%;height:100%;object-fit:cover;">
+                        {% else %}
+                            <span style="color:#fff;font-weight:800;font-size:1.5rem;">{{ user.first_name|make_list|first|default:"U" }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-900">Bonjour, {{ user.first_name|default:user.username }} !</h2>
+                        <div class="flex items-center gap-3 mt-1.5 flex-wrap">
+                            <span class="badge badge-navy">{{ user.get_member_type_display }}</span>
+                            {% if user.is_membership_active %}
+                                <span class="badge badge-green"><i class="fas fa-check-circle mr-1"></i>Adhésion active</span>
+                            {% else %}
+                                <span class="px-2.5 py-1 bg-red-50 text-red-600 rounded-full text-xs font-semibold"><i class="fas fa-exclamation-circle mr-1"></i>Adhésion inactive</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <a href="{% url 'members:profile' %}" class="btn btn-outline btn-sm">
+                        <i class="fas fa-edit"></i> Mon profil
+                    </a>
+                    <a href="{% url 'members:payment' %}" class="btn btn-primary btn-sm">
+                        <i class="fas fa-credit-card"></i> Payer adhésion
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <a href="{% url 'programs:list' %}" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center hover-lift reveal card-accent">
+                <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#dce8f7,#edf1f9);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+                    <i class="fas fa-graduation-cap" style="color:var(--navy);"></i>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Programmes</span>
+            </a>
+            <a href="{% url 'events:list' %}" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center hover-lift reveal card-accent-green" style="transition-delay:.05s;">
+                <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--green-light),#d1f5e4);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+                    <i class="fas fa-calendar-alt" style="color:var(--green);"></i>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Événements</span>
+            </a>
+            <a href="{% url 'tombola:list' %}" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center hover-lift reveal card-accent-amber" style="transition-delay:.1s;">
+                <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--amber-light),#fde4b0);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+                    <i class="fas fa-ticket-alt" style="color:var(--amber);"></i>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Tombola</span>
+            </a>
+            <a href="{% url 'members:payment_history' %}" class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 text-center hover-lift reveal" style="transition-delay:.15s;border-top:3px solid #8b5cf6;">
+                <div style="width:48px;height:48px;border-radius:var(--radius-lg);background:linear-gradient(135deg,#ede9fe,#ddd6fe);display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;">
+                    <i class="fas fa-receipt" style="color:#7c3aed;"></i>
+                </div>
+                <span class="text-sm font-semibold text-gray-700">Paiements</span>
+            </a>
+        </div>
+
+        {% if user.is_staff or user.member_type == 'manager' %}
+        <!-- Gestion du site - Visible pour gestionnaires et admin -->
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 mb-8 reveal">
+            <div class="flex items-center gap-3 mb-6">
+                <div style="width:40px;height:40px;border-radius:var(--radius-lg);background:linear-gradient(135deg,var(--navy),var(--green));display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-cog" style="color:#fff;font-size:1rem;"></i>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">Gestion du site</h2>
+                    <p class="text-sm text-gray-500">Gérez le contenu de la plateforme IABE</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <a href="/admin/programs/program/add/" target="_blank" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,#dce8f7,#edf1f9);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-plus" style="color:var(--navy);font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Ajouter un programme</span>
+                </a>
+                <a href="/admin/events/event/add/" target="_blank" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,var(--green-light),#d1f5e4);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-plus" style="color:var(--green);font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Ajouter un événement</span>
+                </a>
+                <a href="/admin/blog/article/add/" target="_blank" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,var(--amber-light),#fde4b0);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-plus" style="color:var(--amber);font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Ajouter un article</span>
+                </a>
+                <a href="/admin/tombola/tombola/add/" target="_blank" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,#fce7f3,#fbcfe8);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-plus" style="color:#be185d;font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Créer une tombola</span>
+                </a>
+                <a href="/admin/blog/category/add/" target="_blank" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,#e0e7ff,#c7d2fe);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-folder-plus" style="color:#4338ca;font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Ajouter une catégorie</span>
+                </a>
+                <a href="/admin/programs/partner/add/" target="_blank" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,#dcfce7,#bbf7d0);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-handshake" style="color:#16a34a;font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Ajouter un partenaire</span>
+                </a>
+                <a href="/admin/" target="_blank" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,#1e3a5f,#2d5a87);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-user-shield" style="color:#fff;font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Administration complète</span>
+                </a>
+                <a href="{% url 'core:contact' %}" class="bg-gray-50 rounded-xl p-4 border border-gray-200 hover:border-primary-400 hover:shadow-md transition text-center">
+                    <div style="width:40px;height:40px;border-radius:var(--radius);background:linear-gradient(135deg,#fef3c7,#fde68a);display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;">
+                        <i class="fas fa-headset" style="color:#b45309;font-size:.9rem;"></i>
+                    </div>
+                    <span class="text-xs font-semibold text-gray-700">Support technique</span>
+                </a>
+            </div>
+            <div class="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
+                <p class="text-xs text-blue-700"><i class="fas fa-info-circle mr-1"></i> Ces liens ouvrent l'interface d'administration Django. Connectez-vous avec vos identifiants pour gérer le contenu du site.</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Recent Payments -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 reveal">
+                <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <span class="icon-box bg-primary-50 text-primary-600" style="width:36px;height:36px;font-size:0.875rem;border-radius:8px;"><i class="fas fa-receipt"></i></span>
+                    Derniers paiements
+                </h2>
+                {% if payments %}
+                <div class="space-y-3">
+                    {% for payment in payments %}
+                    <div class="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                        <div>
+                            <span class="font-semibold text-gray-900 text-sm">{{ payment.get_payment_type_display }}</span>
+                            <span class="block text-xs text-gray-500 mt-0.5">{{ payment.created_at|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="font-bold text-gray-900 text-sm">{{ payment.amount|intcomma }} FCFA</span>
+                            <span class="block mt-1 px-2.5 py-0.5 rounded-full text-xs font-semibold
+                                {% if payment.status == 'completed' %}bg-green-50 text-green-700
+                                {% elif payment.status == 'pending' %}bg-amber-50 text-amber-700
+                                {% else %}bg-red-50 text-red-700{% endif %}">
+                                {{ payment.get_status_display }}
+                            </span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-10">
+                    <div class="icon-box bg-gray-100 text-gray-400 mx-auto mb-3"><i class="fas fa-receipt"></i></div>
+                    <p class="text-gray-500 text-sm">Aucun paiement pour le moment</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Documents -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 reveal" style="transition-delay:.1s;">
+                <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <span class="icon-box bg-primary-50 text-primary-600" style="width:36px;height:36px;font-size:0.875rem;border-radius:8px;"><i class="fas fa-folder"></i></span>
+                    Mes documents
+                </h2>
+                {% if documents %}
+                <div class="space-y-3">
+                    {% for doc in documents %}
+                    <a href="{{ doc.file.url }}" class="flex items-center gap-3 p-3.5 bg-gray-50 rounded-xl hover:bg-gray-100 transition group">
+                        <i class="fas fa-file-pdf text-red-500 text-lg"></i>
+                        <div class="flex-1 min-w-0">
+                            <span class="font-semibold text-gray-900 text-sm block truncate">{{ doc.title }}</span>
+                            <span class="text-xs text-gray-500">{{ doc.uploaded_at|date:"d/m/Y" }}</span>
+                        </div>
+                        <i class="fas fa-download text-gray-400 group-hover:text-primary-600 transition"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-10">
+                    <div class="icon-box bg-gray-100 text-gray-400 mx-auto mb-3"><i class="fas fa-folder-open"></i></div>
+                    <p class="text-gray-500 text-sm">Aucun document disponible</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

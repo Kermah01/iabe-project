@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}{{ program.title }}{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="dot-pattern"></div>
+    <div class="container relative" style="z-index:1;">
+        <a href="{% url 'programs:list' %}" class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-4 transition">
+            <i class="fas fa-arrow-left text-xs"></i> Programmes
+        </a>
+        <h1 class="fade-in-up">{{ program.title }}</h1>
+        <div class="flex flex-wrap items-center gap-3 mt-4 fade-in-up delay-1">
+            <span class="badge badge-green"><i class="fas fa-map-marker-alt mr-1"></i>{{ program.get_destination_display }}</span>
+            <span class="px-3 py-1.5 bg-white/10 backdrop-blur-sm text-white/80 rounded-lg text-sm font-medium"><i class="fas fa-clock mr-1"></i>{{ program.duration }}</span>
+            <span class="px-3 py-1.5 bg-white/10 backdrop-blur-sm text-white/80 rounded-lg text-sm font-medium"><i class="fas fa-university mr-1"></i>{{ program.partner_institution }}</span>
+        </div>
+    </div>
+</section>
+
+<section class="py-12 section-decorated">
+    <div class="max-w-7xl mx-auto px-4" style="position:relative;z-index:1;">
+        <div class="grid lg:grid-cols-3 gap-10">
+            <!-- Main Content -->
+            <div class="lg:col-span-2 space-y-8">
+                <div class="rounded-2xl overflow-hidden shadow-lg reveal" style="position:relative;">
+                    {% if program.image %}
+                        <img src="{{ program.image.url }}" alt="{{ program.title }}" class="w-full h-80 object-cover">
+                    {% else %}
+                        <div class="img-placeholder green" style="height:320px;">
+                            <i class="fas fa-plane-departure"></i>
+                        </div>
+                    {% endif %}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.3) 0%, transparent 40%);"></div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 reveal card-accent">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4"><i class="fas fa-info-circle mr-2" style="color:var(--navy);"></i>Description du programme</h2>
+                    <div class="text-gray-600 leading-relaxed whitespace-pre-line">{{ program.description }}</div>
+                </div>
+
+                {% if program.highlights %}
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 reveal card-accent-amber">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4"><i class="fas fa-star mr-2" style="color:var(--amber);"></i>Points forts</h2>
+                    <ul class="space-y-3">
+                        {% for highlight in program.highlights.splitlines %}
+                        {% if highlight.strip %}
+                        <li class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style="background:var(--green-light);">
+                                <i class="fas fa-check text-xs" style="color:var(--green);"></i>
+                            </div>
+                            <span class="text-gray-700">{{ highlight }}</span>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if program.requirements %}
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 reveal card-accent-green">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4"><i class="fas fa-clipboard-list mr-2" style="color:var(--green);"></i>Prérequis</h2>
+                    <ul class="space-y-2">
+                        {% for req in program.requirements.splitlines %}
+                        {% if req.strip %}
+                        <li class="flex items-start gap-3">
+                            <i class="fas fa-chevron-right mt-1 text-xs" style="color:var(--navy);"></i>
+                            <span class="text-gray-700">{{ req }}</span>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-6">
+                <div class="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 sticky top-24 reveal">
+                    <!-- Sidebar header -->
+                    <div style="background:linear-gradient(135deg,var(--navy),var(--green-dark));padding:1.5rem;">
+                        <div style="font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.5);margin-bottom:.5rem;">Coût du programme</div>
+                        <div style="font-size:2rem;font-weight:800;color:#fff;">{{ program.cost|intcomma }} <span style="font-size:.85rem;font-weight:400;color:rgba(255,255,255,.6);">FCFA</span></div>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-3 mb-6">
+                            {% if program.start_date %}
+                            <div class="flex items-center gap-3 text-sm">
+                                <div style="width:32px;height:32px;border-radius:var(--radius);background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-calendar-alt" style="color:var(--green);font-size:.75rem;"></i>
+                                </div>
+                                <span class="text-gray-600">Début: <strong>{{ program.start_date|date:"d/m/Y" }}</strong></span>
+                            </div>
+                            {% endif %}
+                            {% if program.end_date %}
+                            <div class="flex items-center gap-3 text-sm">
+                                <div style="width:32px;height:32px;border-radius:var(--radius);background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-calendar-check" style="color:var(--green);font-size:.75rem;"></i>
+                                </div>
+                                <span class="text-gray-600">Fin: <strong>{{ program.end_date|date:"d/m/Y" }}</strong></span>
+                            </div>
+                            {% endif %}
+                            <div class="flex items-center gap-3 text-sm">
+                                <div style="width:32px;height:32px;border-radius:var(--radius);background:#eef2ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-clock" style="color:#4338ca;font-size:.75rem;"></i>
+                                </div>
+                                <span class="text-gray-600">Durée: <strong>{{ program.duration }}</strong></span>
+                            </div>
+                            <div class="flex items-center gap-3 text-sm">
+                                <div style="width:32px;height:32px;border-radius:var(--radius);background:var(--amber-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <i class="fas fa-users" style="color:var(--amber);font-size:.75rem;"></i>
+                                </div>
+                                <span class="text-gray-600"><strong>{{ program.spots_left }}</strong> places restantes</span>
+                            </div>
+                        </div>
+
+                        {% if already_registered %}
+                            <div class="bg-green-50 text-green-700 p-4 rounded-xl text-center font-medium">
+                                <i class="fas fa-check-circle mr-1"></i>Vous êtes inscrit
+                            </div>
+                        {% elif program.spots_left > 0 %}
+                            <a href="{% url 'programs:register' program.slug %}" class="btn btn-primary w-full py-3.5 text-base" style="justify-content:center;">
+                                <i class="fas fa-graduation-cap"></i> S'inscrire au programme
+                            </a>
+                        {% else %}
+                            <div class="bg-red-50 text-red-700 p-4 rounded-xl text-center font-medium">
+                                <i class="fas fa-times-circle mr-1"></i>Programme complet
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

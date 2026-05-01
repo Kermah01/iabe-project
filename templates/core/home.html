@@ -1,0 +1,698 @@
+{% extends 'base.html' %}
+{% load static i18n humanize %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block extra_css %}
+<style>
+.hero-pattern {
+    position: absolute; inset: 0; opacity: .04;
+    background-image: radial-gradient(circle, #fff 1px, transparent 1px);
+    background-size: 28px 28px;
+    pointer-events: none;
+}
+.pillar-card {
+    padding: 1.25rem 1.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    transition: box-shadow var(--transition), border-color var(--transition);
+}
+.pillar-card:hover { box-shadow: var(--shadow); }
+.pillar-number {
+    font-size: 0.72rem; font-weight: 700;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--green); margin-bottom: .5rem;
+}
+.program-icon {
+    width: 40px; height: 40px; border-radius: var(--radius);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 1rem;
+}
+.tombola-ticket {
+    background: var(--navy);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+.tombola-ticket::before {
+    content: '';
+    position: absolute; right: -30px; top: -30px;
+    width: 140px; height: 140px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.04);
+}
+.school-pricing-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+    padding: 1.75rem;
+    text-align: center;
+    position: relative;
+}
+.school-pricing-card.featured {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(26,127,90,.08);
+}
+.price-amount {
+    font-size: 2.25rem; font-weight: 800;
+    color: var(--navy); letter-spacing: -.03em; line-height: 1;
+}
+.testimonial-card {
+    padding: 1.375rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--white);
+}
+@media (max-width: 768px) {
+    .hero-route { display: none !important; }
+    .two-col { grid-template-columns: 1fr !important; }
+    .three-col { grid-template-columns: 1fr !important; }
+    .stats-bar { grid-template-columns: repeat(2,1fr) !important; }
+    .stat-item + .stat-item { border-left: none; }
+    .stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
+    .cta-grid { grid-template-columns: 1fr !important; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ===== HERO ===== -->
+<section class="hero" style="position:relative;">
+    <div class="hero-pattern"></div>
+    <div class="hero-blob-1"></div>
+    <div class="hero-blob-2"></div>
+    <div class="container" style="position:relative;z-index:1;padding-top:2rem;padding-bottom:2rem;">
+        <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:3.5rem;align-items:center;">
+            <div style="max-width:640px;" class="fade-in-up">
+                <div style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(26,127,90,.18);border:1px solid rgba(26,127,90,.3);border-radius:999px;padding:.35rem .875rem;margin-bottom:1.5rem;">
+                    <span style="width:6px;height:6px;border-radius:50%;background:#7BC8A4;display:inline-block;animation:pulse-soft 2s infinite;"></span>
+                    <span style="font-size:.75rem;font-weight:600;color:#7BC8A4;letter-spacing:.06em;text-transform:uppercase;">Côte d'Ivoire &middot; Ghana &middot; Afrique de l'Ouest</span>
+                </div>
+                <h1 class="hero-title" style="margin-bottom:1.25rem;">
+                    L'anglais s'apprend<br>en le <em>vivant</em>
+                </h1>
+                <p class="hero-sub" style="margin-bottom:2rem;max-width:540px;">
+                    L'IABE organise des programmes d'immersion culturelle au Ghana pour les élèves francophones — familles d'accueil, camps de vacances, échanges scolaires et formation des enseignants.
+                </p>
+                <div style="display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:2rem;">
+                    <a href="{% url 'programs:list' %}" class="btn btn-green btn-lg">Voir les programmes <i class="fas fa-arrow-right" style="font-size:.75rem;"></i></a>
+                    <a href="{% url 'tombola:list' %}" class="btn btn-outline-white btn-lg"><i class="fas fa-ticket-alt" style="font-size:.8rem;"></i> Bourse &mdash; 5&nbsp;000 FCFA</a>
+                </div>
+                <!-- Floating pill stats -->
+                <div style="display:flex;flex-wrap:wrap;gap:.625rem;">
+                    <span class="pill-stat" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#fff;"><i class="fas fa-users" style="color:#7BC8A4;"></i> 500+ élèves</span>
+                    <span class="pill-stat" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#fff;"><i class="fas fa-school" style="color:var(--amber);"></i> 30+ écoles</span>
+                    <span class="pill-stat" style="background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.15);color:#fff;"><i class="fas fa-globe-africa" style="color:#7BC8A4;"></i> 3 pays</span>
+                </div>
+            </div>
+            <!-- Hero visual showcase -->
+            <div class="hero-route fade-in-right" style="position:relative;">
+                <!-- Main image card -->
+                <div style="border-radius:var(--radius-xl);overflow:hidden;box-shadow:0 25px 60px rgba(0,0,0,.35);position:relative;">
+                    <img src="{% static 'images/hero-immersion.png' %}" alt="Élèves en immersion" style="width:100%;height:320px;object-fit:cover;display:block;">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.6) 0%, transparent 60%);"></div>
+                    <div style="position:absolute;bottom:0;left:0;right:0;padding:1.5rem;">
+                        <div style="font-size:.7rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.6);margin-bottom:.3rem;">Programme vedette</div>
+                        <div style="font-weight:700;color:#fff;font-size:1rem;">Immersion en famille d'accueil — Accra, Ghana</div>
+                    </div>
+                </div>
+                <!-- Floating route card -->
+                <div class="float-anim" style="position:absolute;bottom:-1.5rem;left:-1.5rem;background:var(--white);border-radius:var(--radius-lg);padding:1rem 1.25rem;box-shadow:var(--shadow-lg);z-index:2;border:1px solid var(--border);">
+                    <div style="display:flex;align-items:center;gap:.75rem;">
+                        <div style="width:40px;height:40px;border-radius:var(--radius);background:var(--green-light);display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-route" style="color:var(--green);"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:.7rem;color:var(--gray-500);">Abidjan → Accra</div>
+                            <div style="font-weight:700;font-size:.85rem;color:var(--gray-900);">STC Bus &middot; ~6h</div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Floating success card -->
+                <div class="float-anim" style="position:absolute;top:1rem;right:-1rem;background:var(--white);border-radius:var(--radius-lg);padding:.75rem 1rem;box-shadow:var(--shadow-lg);z-index:2;border:1px solid var(--border);animation-delay:1s;">
+                    <div style="display:flex;align-items:center;gap:.5rem;">
+                        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--green-dark),var(--green));display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-check" style="color:#fff;font-size:.7rem;"></i>
+                        </div>
+                        <div>
+                            <div style="font-size:.7rem;color:var(--gray-500);">Taux de satisfaction</div>
+                            <div style="font-weight:800;font-size:.95rem;color:var(--green);">98%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Wave divider -->
+<div class="wave-divider">
+    <svg viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0,0 C300,55 900,55 1200,0 L1200,60 L0,60 Z" fill="#F7F8FA"/></svg>
+</div>
+
+<!-- ===== STATS ===== -->
+<div class="container" style="margin-top:-2rem;position:relative;z-index:10;">
+    <div class="stats-bar reveal" style="display:grid;grid-template-columns:repeat(4,1fr);">
+        <div class="stat-item"><div class="stat-value">500+</div><div class="stat-label">Élèves accompagnés</div></div>
+        <div class="stat-item"><div class="stat-value">30+</div><div class="stat-label">Écoles membres</div></div>
+        <div class="stat-item"><div class="stat-value">5</div><div class="stat-label">Types de programmes</div></div>
+        <div class="stat-item"><div class="stat-value">3</div><div class="stat-label">Pays (CI &middot; GH &middot; BF)</div></div>
+    </div>
+</div>
+
+<!-- ===== POURQUOI IABE ===== -->
+<section class="section section-decorated" style="position:relative;">
+    <!-- Decorative dots -->
+    <div class="deco-dots" style="width:120px;height:120px;top:3rem;right:5%;"></div>
+    <div class="deco-circle" style="width:200px;height:200px;bottom:-60px;left:-60px;"></div>
+    <div class="container" style="position:relative;z-index:1;">
+        <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+            <!-- Left: Image mosaic -->
+            <div class="reveal-left" style="position:relative;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;">
+                    <div style="border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-lg);grid-row:span 2;">
+                        <img src="{% static 'images/pourquoi-iabe-1.png' %}" alt="Classe bilingue" style="width:100%;height:100%;object-fit:cover;display:block;">
+                    </div>
+                    <div style="border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);">
+                        <img src="{% static 'images/pourquoi-iabe-2.png' %}" alt="Étudiants ensemble" style="width:100%;height:140px;object-fit:cover;display:block;">
+                    </div>
+                    <div style="border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow);">
+                        <img src="{% static 'images/pourquoi-iabe-3.png' %}" alt="Campus Ghana" style="width:100%;height:140px;object-fit:cover;display:block;">
+                    </div>
+                </div>
+                <!-- Floating stat -->
+                <div class="float-anim" style="position:absolute;bottom:1rem;right:-1rem;background:var(--navy);color:#fff;border-radius:var(--radius-lg);padding:1rem 1.25rem;box-shadow:var(--shadow-xl);z-index:2;">
+                    <div style="font-size:1.75rem;font-weight:800;line-height:1;">8 ans</div>
+                    <div style="font-size:.72rem;color:rgba(255,255,255,.6);">d'expérience</div>
+                </div>
+            </div>
+            <!-- Right: Content + pillar cards -->
+            <div>
+                <span class="section-label">Pourquoi l'IABE</span>
+                <h2 class="section-title">L'immersion réelle, accessible depuis l'Afrique de l'Ouest</h2>
+                <p style="color:var(--gray-500);line-height:1.75;margin-bottom:1.5rem;">
+                    En Côte d'Ivoire, l'enseignement de l'anglais reste trop souvent théorique. Le Ghana — pays anglophone — est à quelques heures d'Abidjan. L'IABE structure ce pont avec un réseau de familles d'accueil, partenariats scolaires et transport négocié.
+                </p>
+                <div style="display:flex;flex-direction:column;gap:.625rem;margin-bottom:2rem;">
+                    <div class="pillar-card reveal hover-lift" style="border-left:3px solid var(--green);">
+                        <div style="display:flex;align-items:center;gap:.875rem;">
+                            <div class="num-highlight" style="width:40px;height:40px;font-size:.8rem;">01</div>
+                            <div><div style="font-weight:700;font-size:.875rem;color:var(--gray-900);">Familles d'accueil sélectionnées</div><p style="font-size:.8rem;color:var(--gray-500);margin:.15rem 0 0;">L'élève vit chez une famille anglophone au Ghana.</p></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card reveal hover-lift" style="border-left:3px solid #4338ca;">
+                        <div style="display:flex;align-items:center;gap:.875rem;">
+                            <div class="num-highlight" style="width:40px;height:40px;font-size:.8rem;background:linear-gradient(135deg,#4338ca,#6366f1);">02</div>
+                            <div><div style="font-weight:700;font-size:.875rem;color:var(--gray-900);">Camps de vacances intensifs</div><p style="font-size:.8rem;color:var(--gray-500);margin:.15rem 0 0;">Séjours encadrés pendant les grandes vacances.</p></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card reveal hover-lift" style="border-left:3px solid var(--amber);">
+                        <div style="display:flex;align-items:center;gap:.875rem;">
+                            <div class="num-highlight" style="width:40px;height:40px;font-size:.8rem;background:linear-gradient(135deg,#7c4a00,var(--amber));">03</div>
+                            <div><div style="font-weight:700;font-size:.875rem;color:var(--gray-900);">Échanges scolaires structurés</div><p style="font-size:.8rem;color:var(--gray-500);margin:.15rem 0 0;">Partenariats CI-Ghana pour des échanges d'élèves.</p></div>
+                        </div>
+                    </div>
+                    <div class="pillar-card reveal hover-lift" style="border-left:3px solid #9333ea;">
+                        <div style="display:flex;align-items:center;gap:.875rem;">
+                            <div class="num-highlight" style="width:40px;height:40px;font-size:.8rem;background:linear-gradient(135deg,#7e22ce,#9333ea);">04</div>
+                            <div><div style="font-weight:700;font-size:.875rem;color:var(--gray-900);">Formation des enseignants</div><p style="font-size:.8rem;color:var(--gray-500);margin:.15rem 0 0;">Recyclage des professeurs non natifs.</p></div>
+                        </div>
+                    </div>
+                </div>
+                <a href="{% url 'core:about' %}" class="btn btn-primary">Découvrir notre histoire <i class="fas fa-arrow-right" style="font-size:.72rem;"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== PROGRAMMES ===== -->
+<section class="section section-mesh">
+    <div class="container" style="position:relative;z-index:1;">
+        <div style="text-align:center;margin-bottom:3rem;">
+            <span class="section-label">Programmes</span>
+            <h2 class="section-title">Nos programmes d'immersion</h2>
+            <p class="lead" style="margin:0 auto;">Des expériences transformatrices pour les élèves francophones d'Afrique de l'Ouest</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;">
+            {% for program in programs %}
+            <div class="card hover-lift" style="overflow:hidden;">
+                <div style="height:190px;position:relative;overflow:hidden;">
+                    {% if program.image %}
+                        <img src="{{ program.image.url }}" alt="{{ program.title }}" class="card-img" style="height:190px;">
+                    {% else %}
+                        <div class="img-placeholder{% cycle '' ' green' ' amber' %}">
+                            <i class="fas fa-{% cycle 'plane' 'campground' 'home' 'exchange-alt' 'chalkboard-teacher' %}"></i>
+                        </div>
+                    {% endif %}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <div style="position:absolute;top:.75rem;left:.75rem;display:flex;gap:.35rem;">
+                        <span class="badge badge-green">{{ program.get_destination_display }}</span>
+                        <span class="badge" style="background:rgba(255,255,255,.9);color:var(--gray-700);">{{ program.get_program_type_display }}</span>
+                    </div>
+                    <div style="position:absolute;bottom:.75rem;right:.75rem;">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--navy);box-shadow:var(--shadow);">{{ program.cost|intcomma }} FCFA</span>
+                    </div>
+                </div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.95rem;font-weight:700;margin-bottom:.375rem;">{{ program.title }}</h3>
+                    <p style="font-size:.82rem;color:var(--gray-500);line-height:1.6;margin-bottom:.875rem;" class="line-clamp-2">{{ program.description|truncatewords:18 }}</p>
+                    {% if program.transport_partner %}
+                    <div style="display:flex;align-items:center;gap:.375rem;font-size:.75rem;color:var(--gray-500);margin-bottom:.75rem;">
+                        <i class="fas fa-bus" style="color:var(--green);width:.8rem;"></i> {{ program.transport_partner }}
+                    </div>
+                    {% endif %}
+                    <a href="{% url 'programs:detail' program.slug %}" class="btn btn-primary btn-sm" style="width:100%;justify-content:center;">Voir le programme <i class="fas fa-arrow-right" style="font-size:.65rem;"></i></a>
+                </div>
+            </div>
+            {% empty %}
+            <div style="grid-column:1/-1;text-align:center;padding:4rem 2rem;">
+                <div style="width:80px;height:80px;border-radius:50%;background:var(--gray-100);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-graduation-cap" style="font-size:2rem;color:var(--gray-300);"></i>
+                </div>
+                <p style="color:var(--gray-500);font-size:1rem;margin-bottom:1rem;">Les programmes seront bientôt disponibles.</p>
+                <a href="{% url 'core:contact' %}" class="btn btn-outline btn-sm">Nous contacter</a>
+            </div>
+            {% endfor %}
+        </div>
+        <div style="text-align:center;margin-top:2.5rem;">
+            <a href="{% url 'programs:list' %}" class="btn btn-outline">Tous les programmes <i class="fas fa-arrow-right" style="font-size:.72rem;"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== BOURSE D'IMMERSION ===== -->
+<section class="section section-decorated" style="position:relative;">
+    <div class="deco-circle" style="width:300px;height:300px;top:-80px;right:-80px;border-color:rgba(201,124,10,.1);"></div>
+    <div class="container" style="position:relative;z-index:1;">
+        <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+            <div>
+                <span class="section-label" style="color:var(--amber);">Bourse d'immersion</span>
+                <h2 class="section-title">Un séjour linguistique<br><span class="gradient-text">accessible à tous</span></h2>
+                <p style="color:var(--gray-500);line-height:1.75;margin-bottom:1.5rem;">
+                    Pour <strong style="color:var(--amber);font-size:1.1em;">5 000 FCFA</strong> seulement, un élève peut gagner un séjour complet au Ghana — hébergement en famille, programme et transport inclus.
+                </p>
+                <ul style="list-style:none;padding:0;margin:0 0 2rem;display:flex;flex-direction:column;gap:.75rem;">
+                    <li style="display:flex;align-items:center;gap:.75rem;font-size:.9rem;color:var(--gray-700);padding:.5rem .75rem;background:var(--green-light);border-radius:var(--radius);"><div style="width:24px;height:24px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-check" style="color:#fff;font-size:.6rem;"></i></div> Ticket unique généré instantanément</li>
+                    <li style="display:flex;align-items:center;gap:.75rem;font-size:.9rem;color:var(--gray-700);padding:.5rem .75rem;background:var(--amber-light);border-radius:var(--radius);"><div style="width:24px;height:24px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-mobile-alt" style="color:#fff;font-size:.6rem;"></i></div> MTN, Orange, Moov Money</li>
+                    <li style="display:flex;align-items:center;gap:.75rem;font-size:.9rem;color:var(--gray-700);padding:.5rem .75rem;background:#eef2ff;border-radius:var(--radius);"><div style="width:24px;height:24px;border-radius:50%;background:#4338ca;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-random" style="color:#fff;font-size:.6rem;"></i></div> Tirage automatisé et transparent</li>
+                    <li style="display:flex;align-items:center;gap:.75rem;font-size:.9rem;color:var(--gray-700);padding:.5rem .75rem;background:#fdf4ff;border-radius:var(--radius);"><div style="width:24px;height:24px;border-radius:50%;background:#9333ea;display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-trophy" style="color:#fff;font-size:.6rem;"></i></div> Lot : séjour complet au Ghana</li>
+                </ul>
+                <a href="{% url 'tombola:list' %}" class="btn btn-amber btn-lg"><i class="fas fa-ticket-alt"></i> Participer à la bourse</a>
+            </div>
+            <div class="reveal-right" style="position:relative;">
+                <!-- Background image -->
+                <div style="border-radius:var(--radius-xl);overflow:hidden;box-shadow:var(--shadow-xl);">
+                    <img src="{% static 'images/tombola-hero.png' %}" alt="Famille d'accueil Ghana" style="width:100%;height:300px;object-fit:cover;display:block;">
+                </div>
+                <!-- Floating ticket card -->
+                <div class="tombola-ticket float-anim" style="position:absolute;bottom:-2rem;left:-1.5rem;width:260px;box-shadow:var(--shadow-xl);z-index:2;">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem;">
+                        <div>
+                            <div style="font-size:.6rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.4);">Bourse IABE</div>
+                            <div style="font-size:1rem;font-weight:800;color:#fff;">Tombola</div>
+                        </div>
+                        <i class="fas fa-ticket-alt" style="font-size:1.25rem;color:rgba(255,255,255,.15);"></i>
+                    </div>
+                    <div style="border-top:1px dashed rgba(255,255,255,.15);padding-top:.875rem;">
+                        <div style="font-size:2rem;font-weight:800;color:#fff;line-height:1;">5&nbsp;000 <span style="font-size:.75rem;font-weight:400;color:rgba(255,255,255,.5);">FCFA</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== CONVENTION ANNUELLE ===== -->
+<section style="position:relative;overflow:hidden;">
+    <!-- Full-bleed image background -->
+    <div style="position:absolute;inset:0;">
+        <img src="{% static 'images/event-convention.png' %}" alt="Convention" style="width:100%;height:100%;object-fit:cover;">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(17,24,39,.92) 0%, rgba(27,58,107,.88) 100%);"></div>
+    </div>
+    <div class="container section" style="position:relative;z-index:1;">
+        <div class="two-col" style="display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;">
+            <div>
+                <span style="display:inline-flex;align-items:center;gap:.5rem;background:rgba(123,200,164,.15);border:1px solid rgba(123,200,164,.3);border-radius:999px;padding:.35rem .875rem;margin-bottom:1.5rem;">
+                    <i class="fas fa-star" style="font-size:.65rem;color:#7BC8A4;"></i>
+                    <span style="font-size:.72rem;font-weight:600;color:#7BC8A4;letter-spacing:.06em;text-transform:uppercase;">Événement phare</span>
+                </span>
+                <h2 style="color:#fff;font-size:clamp(1.5rem,3.5vw,2.25rem);font-weight:800;letter-spacing:-.03em;margin-bottom:1rem;">Convention Annuelle des Écoles Bilingues</h2>
+                <p style="color:rgba(255,255,255,.65);font-size:.95rem;line-height:1.75;margin-bottom:2rem;">Le grand rendez-vous de l'IABE — directeurs, experts, partenaires internationaux et enseignants pour construire l'avenir du bilinguisme en Afrique.</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:2rem;">
+                    <div style="text-align:center;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:var(--radius-lg);padding:1rem .5rem;border:1px solid rgba(255,255,255,.08);">
+                        <i class="fas fa-school" style="color:#7BC8A4;font-size:1.25rem;display:block;margin-bottom:.5rem;"></i>
+                        <div style="font-size:1.375rem;font-weight:800;color:#fff;">30+</div>
+                        <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:.15rem;">Écoles</div>
+                    </div>
+                    <div style="text-align:center;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:var(--radius-lg);padding:1rem .5rem;border:1px solid rgba(255,255,255,.08);">
+                        <i class="fas fa-user-tie" style="color:var(--amber);font-size:1.25rem;display:block;margin-bottom:.5rem;"></i>
+                        <div style="font-size:1.375rem;font-weight:800;color:#fff;">15+</div>
+                        <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:.15rem;">Experts</div>
+                    </div>
+                    <div style="text-align:center;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:var(--radius-lg);padding:1rem .5rem;border:1px solid rgba(255,255,255,.08);">
+                        <i class="fas fa-award" style="color:var(--amber);font-size:1.25rem;display:block;margin-bottom:.5rem;"></i>
+                        <div style="font-size:1.375rem;font-weight:800;color:#fff;">10</div>
+                        <div style="font-size:.68rem;color:rgba(255,255,255,.5);margin-top:.15rem;">Bourses</div>
+                    </div>
+                </div>
+                <a href="{% url 'events:list' %}" class="btn btn-green btn-lg"><i class="fas fa-calendar-alt"></i> Voir les événements</a>
+            </div>
+            <div class="reveal-right">
+                <div style="display:flex;flex-direction:column;gap:.75rem;">
+                    <div style="display:flex;align-items:flex-start;gap:1rem;padding:1.125rem;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:var(--radius-lg);border:1px solid rgba(255,255,255,.08);">
+                        <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(123,200,164,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-comments" style="color:#7BC8A4;font-size:.85rem;"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:.875rem;color:#fff;margin-bottom:.2rem;">Débats de haut niveau</div>
+                            <div style="font-size:.8rem;color:rgba(255,255,255,.5);">Enjeux et bonnes pratiques de l'éducation bilingue</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:1rem;padding:1.125rem;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:var(--radius-lg);border:1px solid rgba(255,255,255,.08);">
+                        <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(201,124,10,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-bullhorn" style="color:var(--amber);font-size:.85rem;"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:.875rem;color:#fff;margin-bottom:.2rem;">Visibilité & networking</div>
+                            <div style="font-size:.8rem;color:rgba(255,255,255,.5);">Stand, présentation et recrutement d'élèves</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;align-items:flex-start;gap:1rem;padding:1.125rem;background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border-radius:var(--radius-lg);border:1px solid rgba(255,255,255,.08);">
+                        <div style="width:40px;height:40px;border-radius:var(--radius);background:rgba(123,200,164,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                            <i class="fas fa-handshake" style="color:#7BC8A4;font-size:.85rem;"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:.875rem;color:#fff;margin-bottom:.2rem;">Partenaires internationaux</div>
+                            <div style="font-size:.8rem;color:rgba(255,255,255,.5);">Ghana Institute of Languages, STC et institutions invitées</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== ADHÉSION ÉCOLES ===== -->
+<section class="section section-mesh">
+    <div class="container" style="position:relative;z-index:1;">
+        <div style="text-align:center;margin-bottom:3rem;">
+            <span class="section-label">Réseau des écoles</span>
+            <h2 class="section-title">Votre école est bilingue ?<br><span class="gradient-text">Rejoignez le réseau IABE</span></h2>
+            <p class="lead" style="margin:0 auto;">Visibilité, programmes prioritaires, convention annuelle, accompagnement pédagogique.</p>
+        </div>
+        <div class="three-col" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:0 auto 2.5rem;">
+            <div class="school-pricing-card reveal hover-lift card-accent">
+                <div style="width:48px;height:48px;background:linear-gradient(135deg,#dce8f7,#edf1f9);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-id-card" style="color:var(--navy);font-size:1.1rem;"></i>
+                </div>
+                <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-500);margin-bottom:.5rem;">Adhésion</div>
+                <div class="price-amount">30&nbsp;000</div>
+                <div style="font-size:.78rem;color:var(--gray-500);margin-top:.25rem;">FCFA — paiement unique</div>
+            </div>
+            <div class="school-pricing-card featured reveal hover-lift" style="transform:scale(1.05);box-shadow:var(--shadow-lg);">
+                <div style="position:absolute;top:-10px;right:1rem;background:var(--green);color:#fff;font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:.25rem .6rem;border-radius:999px;">Populaire</div>
+                <div style="width:48px;height:48px;background:linear-gradient(135deg,var(--green-light),#d1f5e4);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-sync-alt" style="color:var(--green);font-size:1.1rem;"></i>
+                </div>
+                <div style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--green);margin-bottom:.5rem;">Cotisation mensuelle</div>
+                <div class="price-amount" style="color:var(--green);">100&nbsp;000</div>
+                <div style="font-size:.78rem;color:var(--gray-500);margin-top:.25rem;">FCFA / mois</div>
+            </div>
+            <div class="school-pricing-card reveal hover-lift card-accent-amber">
+                <div style="width:48px;height:48px;background:linear-gradient(135deg,var(--amber-light),#fde4b0);border-radius:var(--radius-lg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+                    <i class="fas fa-gift" style="color:var(--amber);font-size:1.1rem;"></i>
+                </div>
+                <div style="font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--gray-500);margin-bottom:.5rem;">Avantages inclus</div>
+                <ul style="list-style:none;padding:0;margin:.375rem 0 0;text-align:left;display:flex;flex-direction:column;gap:.4rem;">
+                    <li style="font-size:.8rem;color:var(--gray-700);display:flex;align-items:center;gap:.5rem;"><div style="width:18px;height:18px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-check" style="color:var(--green);font-size:.5rem;"></i></div> Convention annuelle</li>
+                    <li style="font-size:.8rem;color:var(--gray-700);display:flex;align-items:center;gap:.5rem;"><div style="width:18px;height:18px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-check" style="color:var(--green);font-size:.5rem;"></i></div> Programmes prioritaires</li>
+                    <li style="font-size:.8rem;color:var(--gray-700);display:flex;align-items:center;gap:.5rem;"><div style="width:18px;height:18px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-check" style="color:var(--green);font-size:.5rem;"></i></div> Réseau national</li>
+                    <li style="font-size:.8rem;color:var(--gray-700);display:flex;align-items:center;gap:.5rem;"><div style="width:18px;height:18px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;"><i class="fas fa-check" style="color:var(--green);font-size:.5rem;"></i></div> Visibilité digitale</li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align:center;">
+            <a href="{% url 'members:register' %}" class="btn btn-primary btn-lg"><i class="fas fa-school"></i> Inscrire mon école</a>
+        </div>
+    </div>
+</section>
+
+<!-- ===== ÉVÉNEMENTS ===== -->
+<section class="section" style="background:var(--gray-50);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+    <div class="container">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <span class="section-label">Agenda</span>
+                <h2 class="section-title" style="margin-bottom:0;">Prochains événements</h2>
+            </div>
+            <a href="{% url 'events:list' %}" class="btn btn-outline btn-sm">Tous les événements <i class="fas fa-arrow-right" style="font-size:.72rem;"></i></a>
+        </div>
+        {% if upcoming_events %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;">
+            {% for event in upcoming_events %}
+            <div class="card hover-lift reveal" style="overflow:hidden;">
+                <div style="height:140px;position:relative;overflow:hidden;">
+                    {% if event.image %}
+                        <img src="{{ event.image.url }}" alt="{{ event.title }}" style="width:100%;height:100%;object-fit:cover;">
+                    {% else %}
+                        <div class="img-placeholder{% cycle '' ' green' ' amber' %}" style="height:100%;">
+                            <i class="fas fa-{% cycle 'calendar-alt' 'users' 'chalkboard-teacher' %}"></i>
+                        </div>
+                    {% endif %}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.5) 0%, transparent 50%);"></div>
+                    <div style="position:absolute;top:.75rem;left:.75rem;">
+                        <div style="background:var(--navy);color:#fff;border-radius:var(--radius);padding:.4rem .7rem;text-align:center;min-width:48px;">
+                            <div style="font-size:1.25rem;font-weight:800;line-height:1;">{{ event.start_date|date:"d" }}</div>
+                            <div style="font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;opacity:.65;">{{ event.start_date|date:"M" }}</div>
+                        </div>
+                    </div>
+                    <div style="position:absolute;top:.75rem;right:.75rem;">
+                        <span class="badge badge-green">{{ event.get_event_type_display }}</span>
+                    </div>
+                </div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.3rem;">{{ event.title }}</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;margin-bottom:.75rem;" class="line-clamp-2">{{ event.description|truncatewords:16 }}</p>
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-size:.77rem;color:var(--gray-500);"><i class="fas fa-map-marker-alt" style="margin-right:.25rem;"></i>{{ event.location }}</span>
+                        <a href="{% url 'events:detail' event.slug %}" class="btn btn-primary btn-sm">Détails <i class="fas fa-arrow-right" style="font-size:.6rem;"></i></a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.25rem;">
+            <div class="card hover-lift reveal" style="overflow:hidden;">
+                <div class="img-placeholder" style="height:140px;"><i class="fas fa-calendar-alt"></i></div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.3rem;">Convention annuelle IABE</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;">Rassemblement des écoles bilingues d'Afrique de l'Ouest</p>
+                </div>
+            </div>
+            <div class="card hover-lift reveal" style="overflow:hidden;">
+                <div class="img-placeholder green" style="height:140px;"><i class="fas fa-users"></i></div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.3rem;">Camp d'immersion vacances</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;">Séjour intensif en anglais pour les vacances d'été</p>
+                </div>
+            </div>
+            <div class="card hover-lift reveal" style="overflow:hidden;">
+                <div class="img-placeholder amber" style="height:140px;"><i class="fas fa-chalkboard-teacher"></i></div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;margin-bottom:.3rem;">Formation des enseignants</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;">Recyclage pédagogique pour professeurs non natifs</p>
+                </div>
+            </div>
+        </div>
+        <div style="text-align:center;margin-top:1.5rem;">
+            <p style="font-size:.85rem;color:var(--gray-500);font-style:italic;">De nouveaux événements seront bientôt annoncés</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ===== TÉMOIGNAGES ===== -->
+<section class="section section-decorated">
+    <div class="container" style="position:relative;z-index:1;">
+        <div style="text-align:center;margin-bottom:3rem;">
+            <span class="section-label">Témoignages</span>
+            <h2 class="section-title">Ce que disent nos membres</h2>
+            <p class="lead" style="margin:0 auto;">Des expériences qui changent des vies</p>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;">
+            {% for testimonial in testimonials %}
+            <div class="testimonial-card hover-lift" style="position:relative;padding:1.75rem;">
+                <span class="quote-mark">&ldquo;</span>
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;gap:.25rem;margin-bottom:1rem;">
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                    </div>
+                    <p style="font-size:.875rem;color:var(--gray-700);line-height:1.75;margin-bottom:1.25rem;">"{{ testimonial.content|truncatewords:30 }}"</p>
+                    <div style="display:flex;align-items:center;gap:.75rem;padding-top:1rem;border-top:1px solid var(--border);">
+                        <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--navy),var(--green));border-radius:50%;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                            {% if testimonial.photo %}<img src="{{ testimonial.photo.url }}" alt="{{ testimonial.name }}" style="width:100%;height:100%;object-fit:cover;">
+                            {% else %}<span style="color:#fff;font-weight:700;font-size:.9rem;">{{ testimonial.name|make_list|first }}</span>{% endif %}
+                        </div>
+                        <div>
+                            <div style="font-size:.875rem;font-weight:700;color:var(--gray-900);">{{ testimonial.name }}</div>
+                            <div style="font-size:.75rem;color:var(--gray-500);">{{ testimonial.role }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Placeholder testimonials when database is empty -->
+            <div class="testimonial-card hover-lift reveal" style="position:relative;padding:1.75rem;">
+                <span class="quote-mark">&ldquo;</span>
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;gap:.25rem;margin-bottom:1rem;">
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                    </div>
+                    <p style="font-size:.875rem;color:var(--gray-700);line-height:1.75;margin-bottom:1.25rem;">"Mon fils est revenu du Ghana en parlant anglais couramment. En deux semaines chez la famille d'accueil, il a plus progressé qu'en trois ans de cours."</p>
+                    <div style="display:flex;align-items:center;gap:.75rem;padding-top:1rem;border-top:1px solid var(--border);">
+                        <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--navy),var(--green));border-radius:50%;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:700;font-size:.9rem;">A</span></div>
+                        <div>
+                            <div style="font-size:.875rem;font-weight:700;color:var(--gray-900);">Aminata K.</div>
+                            <div style="font-size:.75rem;color:var(--gray-500);">Parent d'élève, Abidjan</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card hover-lift reveal" style="position:relative;padding:1.75rem;">
+                <span class="quote-mark">&ldquo;</span>
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;gap:.25rem;margin-bottom:1rem;">
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                    </div>
+                    <p style="font-size:.875rem;color:var(--gray-700);line-height:1.75;margin-bottom:1.25rem;">"Grâce à la tombola, j'ai gagné un séjour complet à Accra pour seulement 5 000 FCFA. L'IABE change des vies, c'est une vraie opportunité."</p>
+                    <div style="display:flex;align-items:center;gap:.75rem;padding-top:1rem;border-top:1px solid var(--border);">
+                        <div style="width:44px;height:44px;background:linear-gradient(135deg,var(--amber),#e8a020);border-radius:50%;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:700;font-size:.9rem;">K</span></div>
+                        <div>
+                            <div style="font-size:.875rem;font-weight:700;color:var(--gray-900);">Kouadio S.</div>
+                            <div style="font-size:.75rem;color:var(--gray-500);">Élève, Lycée Sainte-Marie</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card hover-lift reveal" style="position:relative;padding:1.75rem;">
+                <span class="quote-mark">&ldquo;</span>
+                <div style="position:relative;z-index:1;">
+                    <div style="display:flex;gap:.25rem;margin-bottom:1rem;">
+                        <i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i><i class="fas fa-star" style="color:var(--amber);font-size:.7rem;"></i>
+                    </div>
+                    <p style="font-size:.875rem;color:var(--gray-700);line-height:1.75;margin-bottom:1.25rem;">"Notre école a rejoint le réseau IABE et nos élèves bénéficient désormais de programmes d'immersion structurés. Le retour des parents est exceptionnel."</p>
+                    <div style="display:flex;align-items:center;gap:.75rem;padding-top:1rem;border-top:1px solid var(--border);">
+                        <div style="width:44px;height:44px;background:linear-gradient(135deg,#6366f1,#4338ca);border-radius:50%;display:flex;align-items:center;justify-content:center;"><span style="color:#fff;font-weight:700;font-size:.9rem;">D</span></div>
+                        <div>
+                            <div style="font-size:.875rem;font-weight:700;color:var(--gray-900);">Dr. Diallo M.</div>
+                            <div style="font-size:.75rem;color:var(--gray-500);">Directeur d'école bilingue</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ===== BLOG ===== -->
+<section class="section" style="background:var(--gray-50);">
+    <div class="container">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;">
+            <div>
+                <span class="section-label">Blog &amp; ressources</span>
+                <h2 class="section-title" style="margin-bottom:0;">Derniers articles</h2>
+            </div>
+            <a href="{% url 'blog:list' %}" class="btn btn-outline btn-sm">Tous les articles <i class="fas fa-arrow-right" style="font-size:.72rem;"></i></a>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem;">
+            {% for article in recent_articles %}
+            <a href="{% url 'blog:detail' article.slug %}" class="card hover-lift" style="text-decoration:none;display:block;overflow:hidden;">
+                <div style="height:180px;position:relative;overflow:hidden;">
+                    {% if article.image %}<img src="{{ article.image.url }}" alt="{{ article.title }}" class="card-img" style="height:180px;">
+                    {% else %}<div class="img-placeholder"><i class="fas fa-newspaper"></i></div>{% endif %}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    {% if article.category %}<span class="badge badge-navy" style="position:absolute;top:.75rem;left:.75rem;">{{ article.category.name }}</span>{% endif %}
+                </div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;color:var(--gray-900);margin-bottom:.4rem;">{{ article.title }}</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;margin-bottom:.75rem;" class="line-clamp-2">{{ article.excerpt|truncatewords:16 }}</p>
+                    <div style="display:flex;align-items:center;justify-content:space-between;">
+                        <div style="font-size:.72rem;color:var(--gray-500);"><i class="far fa-calendar" style="margin-right:.25rem;"></i> {{ article.published_at|date:"d M Y" }}</div>
+                        <span style="font-size:.75rem;font-weight:600;color:var(--navy);">Lire <i class="fas fa-arrow-right" style="font-size:.6rem;"></i></span>
+                    </div>
+                </div>
+            </a>
+            {% empty %}
+            <!-- Placeholder articles when database is empty -->
+            <div class="card hover-lift reveal" style="overflow:hidden;">
+                <div style="height:180px;position:relative;overflow:hidden;">
+                    <div class="img-placeholder" style="height:100%;"><i class="fas fa-language"></i></div>
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <span class="badge badge-navy" style="position:absolute;top:.75rem;left:.75rem;">Immersion</span>
+                </div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;color:var(--gray-900);margin-bottom:.4rem;">Pourquoi l'immersion au Ghana est la meilleure option</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;margin-bottom:.75rem;">Découvrez pourquoi des centaines de familles ivoiriennes choisissent le Ghana pour l'apprentissage de l'anglais.</p>
+                    <span style="font-size:.75rem;font-weight:600;color:var(--navy);">Bientôt disponible</span>
+                </div>
+            </div>
+            <div class="card hover-lift reveal" style="overflow:hidden;">
+                <div style="height:180px;position:relative;overflow:hidden;">
+                    <div class="img-placeholder green" style="height:100%;"><i class="fas fa-users"></i></div>
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <span class="badge badge-green" style="position:absolute;top:.75rem;left:.75rem;">Témoignage</span>
+                </div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;color:var(--gray-900);margin-bottom:.4rem;">Retour d'expérience : un mois en famille d'accueil à Accra</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;margin-bottom:.75rem;">Le récit de Fatou, 14 ans, qui a vécu une immersion totale pendant les grandes vacances.</p>
+                    <span style="font-size:.75rem;font-weight:600;color:var(--navy);">Bientôt disponible</span>
+                </div>
+            </div>
+            <div class="card hover-lift reveal" style="overflow:hidden;">
+                <div style="height:180px;position:relative;overflow:hidden;">
+                    <div class="img-placeholder amber" style="height:100%;"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.4) 0%, transparent 50%);"></div>
+                    <span class="badge" style="position:absolute;top:.75rem;left:.75rem;background:var(--amber-light);color:#92400e;">Pédagogie</span>
+                </div>
+                <div class="card-body" style="padding:1.25rem;">
+                    <h3 style="font-size:.9rem;font-weight:700;color:var(--gray-900);margin-bottom:.4rem;">Former les enseignants pour un bilinguisme de qualité</h3>
+                    <p style="font-size:.8rem;color:var(--gray-500);line-height:1.6;margin-bottom:.75rem;">Comment l'IABE recycle et perfectionne les professeurs pour élever le niveau de l'enseignement.</p>
+                    <span style="font-size:.75rem;font-weight:600;color:var(--navy);">Bientôt disponible</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ===== CTA FINAL ===== -->
+<section style="position:relative;overflow:hidden;">
+    <div style="position:absolute;inset:0;">
+        <img src="{% static 'images/hero-immersion.png' %}" alt="Éducation Afrique" style="width:100%;height:100%;object-fit:cover;">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(27,58,107,.93) 0%, rgba(26,127,90,.88) 100%);"></div>
+    </div>
+    <div class="container section" style="position:relative;z-index:1;">
+        <div class="cta-grid" style="display:grid;grid-template-columns:1fr auto;gap:3rem;align-items:center;">
+            <div>
+                <h2 style="color:#fff;font-size:clamp(1.5rem,3.5vw,2rem);font-weight:800;margin-bottom:.75rem;">Prêt à rejoindre l'IABE ?</h2>
+                <p style="color:rgba(255,255,255,.7);font-size:1rem;line-height:1.75;margin:0;max-width:550px;">Parent, élève, directeur d'école ou enseignant — notre équipe vous accompagne vers le bon programme d'immersion.</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:.75rem;flex-shrink:0;">
+                <a href="{% url 'programs:list' %}" class="btn btn-green btn-lg" style="white-space:nowrap;"><i class="fas fa-rocket"></i> Découvrir les programmes</a>
+                <a href="{% url 'core:contact' %}" class="btn btn-outline-white" style="text-align:center;"><i class="fas fa-envelope"></i> Nous contacter</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

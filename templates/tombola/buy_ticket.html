@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Acheter un Ticket - {{ tombola.title }}{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background:linear-gradient(135deg, #7c4a00 0%, var(--amber) 60%, #e8a020 100%);">
+    <div class="dot-pattern"></div>
+    <div class="container relative" style="z-index:1;">
+        <a href="{% url 'tombola:detail' tombola.slug %}" class="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm mb-4 transition">
+            <i class="fas fa-arrow-left text-xs"></i> Retour à la tombola
+        </a>
+        <h1 class="fade-in-up"><i class="fas fa-ticket-alt mr-3 text-white/60"></i>Acheter un Ticket</h1>
+    </div>
+</section>
+
+<section class="py-12 section-decorated" style="background:var(--gray-50);">
+    <div class="max-w-2xl mx-auto px-4" style="position:relative;z-index:1;">
+        <div class="bg-white rounded-2xl p-6 shadow-lg border border-amber-100 mb-6 reveal card-accent-amber">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h2 class="text-lg font-bold text-gray-900">{{ tombola.title }}</h2>
+                    <div class="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-500">
+                        <span class="badge badge-amber"><i class="fas fa-calendar mr-1"></i>Tirage: {{ tombola.draw_date|date:"d/m/Y" }}</span>
+                        <span class="badge badge-gray"><i class="fas fa-ticket-alt mr-1"></i>{{ tombola.total_tickets_sold }} tickets vendus</span>
+                    </div>
+                </div>
+            </div>
+            <div class="p-5 bg-gradient-to-r from-amber-50 to-amber-100/50 rounded-xl text-center border border-amber-200/50">
+                <span class="text-sm text-amber-700 font-semibold">Prix du ticket</span>
+                <span class="block text-3xl font-extrabold text-amber-700 mt-1">{{ tombola.ticket_price|intcomma }} FCFA</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 reveal" style="position:relative;overflow:hidden;">
+            <div class="deco-dots" style="width:80px;height:80px;top:-1rem;right:-1rem;"></div>
+            <h2 class="text-xl font-bold text-gray-900 mb-6" style="position:relative;z-index:1;">Paiement Mobile Money</h2>
+            <form method="post" class="space-y-5">
+                {% csrf_token %}
+                {% for field in form %}
+                <div>
+                    <label class="form-label">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}<p class="text-red-500 text-xs mt-1">{{ field.errors.0 }}</p>{% endif %}
+                </div>
+                {% endfor %}
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle flex-shrink-0"></i>
+                    <span>Vous recevrez une demande de paiement de <strong>{{ tombola.ticket_price|intcomma }} FCFA</strong> sur votre téléphone. Un numéro de ticket unique vous sera attribué.</span>
+                </div>
+                <button type="submit" class="btn btn-amber w-full py-3.5 text-base">
+                    <i class="fas fa-ticket-alt"></i> Acheter mon ticket &mdash; {{ tombola.ticket_price|intcomma }} FCFA
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Tombola{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background:linear-gradient(135deg, #7c4a00 0%, var(--amber) 60%, #e8a020 100%);">
+    <div class="dot-pattern"></div>
+    <div class="container text-center relative" style="z-index:1;">
+        <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 text-white/80 text-sm mb-5 fade-in-up">
+            <i class="fas fa-ticket-alt" style="animation:pulse-soft 2s infinite;"></i>
+            <span>Tentez votre chance !</span>
+        </div>
+        <h1 class="fade-in-up delay-1">Bourse d'immersion IABE</h1>
+        <p class="mt-3 text-lg max-w-2xl mx-auto fade-in-up delay-2" style="color:rgba(255,255,255,.75);">Gagnez des séjours linguistiques au Ghana pour seulement 5 000 FCFA le ticket !</p>
+    </div>
+</section>
+
+<section class="py-12 section-decorated">
+    <div class="max-w-7xl mx-auto px-4" style="position:relative;z-index:1;">
+        <!-- How it works -->
+        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 mb-12 reveal" style="position:relative;overflow:hidden;">
+            <div class="deco-dots" style="width:80px;height:80px;top:1rem;right:1rem;"></div>
+            <h2 class="text-2xl font-bold text-gray-900 text-center mb-8">Comment ça marche ?</h2>
+            <div class="grid md:grid-cols-4 gap-6">
+                <div class="text-center">
+                    <div class="num-highlight mx-auto mb-4">1</div>
+                    <h4 class="font-semibold text-gray-900 mb-1">Choisissez</h4>
+                    <p class="text-sm text-gray-500">Sélectionnez une tombola active</p>
+                </div>
+                <div class="text-center">
+                    <div class="num-highlight mx-auto mb-4" style="background:linear-gradient(135deg,var(--amber),#e8a020);">2</div>
+                    <h4 class="font-semibold text-gray-900 mb-1">Payez</h4>
+                    <p class="text-sm text-gray-500">5 000 FCFA par Mobile Money</p>
+                </div>
+                <div class="text-center">
+                    <div class="num-highlight mx-auto mb-4" style="background:linear-gradient(135deg,#4338ca,#6366f1);">3</div>
+                    <h4 class="font-semibold text-gray-900 mb-1">Recevez</h4>
+                    <p class="text-sm text-gray-500">Votre ticket avec numéro unique</p>
+                </div>
+                <div class="text-center">
+                    <div class="num-highlight mx-auto mb-4" style="background:linear-gradient(135deg,var(--green-dark),var(--green));">4</div>
+                    <h4 class="font-semibold text-gray-900 mb-1">Gagnez</h4>
+                    <p class="text-sm text-gray-500">Tirage au sort automatisé</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombola Grid -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for tombola in tombolas %}
+            <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 group hover-lift reveal">
+                <div class="h-48 relative overflow-hidden">
+                    {% if tombola.image %}
+                        <img src="{{ tombola.image.url }}" alt="{{ tombola.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    {% else %}
+                        <div class="img-placeholder amber" style="height:100%;">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                    {% endif %}
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.35) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg
+                            {% if tombola.status == 'active' %}bg-green-500 text-white
+                            {% elif tombola.status == 'upcoming' %}bg-blue-500 text-white
+                            {% elif tombola.status == 'completed' %}bg-gray-500 text-white
+                            {% else %}bg-amber-500 text-white{% endif %}">
+                            {{ tombola.get_status_display }}
+                        </span>
+                    </div>
+                    <div class="absolute bottom-4 left-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--amber);box-shadow:var(--shadow);">{{ tombola.ticket_price|intcomma }} FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-amber-700 transition">{{ tombola.title }}</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">{{ tombola.description|truncatewords:20 }}</p>
+                    <div class="space-y-2 text-sm text-gray-500 mb-4">
+                        <div class="flex items-center gap-2"><i class="fas fa-users text-amber-500 w-4"></i><span>{{ tombola.total_tickets_sold }} tickets vendus</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-calendar text-amber-500 w-4"></i><span>Tirage: {{ tombola.draw_date|date:"d/m/Y" }}</span></div>
+                    </div>
+                    <a href="{% url 'tombola:detail' tombola.slug %}" class="btn btn-amber w-full justify-center">
+                        {% if tombola.status == 'active' %}<i class="fas fa-ticket-alt"></i> Participer{% elif tombola.status == 'completed' %}<i class="fas fa-trophy"></i> Voir les gagnants{% else %}<i class="fas fa-info-circle"></i> Détails{% endif %}
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Tombola exemple pour démonstration -->
+            <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 group hover-lift reveal">
+                <div class="h-48 relative overflow-hidden">
+                    <img src="{% static 'images/tombola-immersion.png' %}" alt="Tombola IABE Ghana" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.35) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg bg-green-500 text-white">Active</span>
+                    </div>
+                    <div class="absolute bottom-4 left-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--amber);box-shadow:var(--shadow);">5 000 FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-amber-700 transition">Tombola Bourse Immersion 2025</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">Gagnez un séjour complet de 2 semaines au Ghana! Hébergement en famille d'accueil, cours d'anglais et transport inclus.</p>
+                    <div class="space-y-2 text-sm text-gray-500 mb-4">
+                        <div class="flex items-center gap-2"><i class="fas fa-users text-amber-500 w-4"></i><span>342 tickets vendus</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-calendar text-amber-500 w-4"></i><span>Tirage: 30 Juin 2025</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-gift text-amber-500 w-4"></i><span>3 lots à gagner</span></div>
+                    </div>
+                    <a href="#" class="btn btn-amber w-full justify-center" onclick="alert('Tombola exemple - Connectez-vous en tant que gestionnaire pour créer de vraies tombolas'); return false;">
+                        <i class="fas fa-ticket-alt"></i> Participer
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 group hover-lift reveal" style="transition-delay:.1s;">
+                <div class="h-48 relative overflow-hidden">
+                    <img src="{% static 'images/tombola-rentree.png' %}" alt="Tombola spéciale rentrée" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.35) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg bg-blue-500 text-white">À venir</span>
+                    </div>
+                    <div class="absolute bottom-4 left-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--amber);box-shadow:var(--shadow);">5 000 FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-amber-700 transition">Tombola Spéciale Rentrée</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">Une tombola exceptionnelle pour la rentrée scolaire! Gagnez un camp d'été immersif complet au Ghana pour la prochaine vacance.</p>
+                    <div class="space-y-2 text-sm text-gray-500 mb-4">
+                        <div class="flex items-center gap-2"><i class="fas fa-users text-amber-500 w-4"></i><span>Ouverture prochaine</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-calendar text-amber-500 w-4"></i><span>Tirage: 15 Sept 2025</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-gift text-amber-500 w-4"></i><span>5 lots à gagner</span></div>
+                    </div>
+                    <a href="#" class="btn btn-outline w-full justify-center" onclick="alert('Tombola exemple - Connectez-vous en tant que gestionnaire pour créer de vraies tombolas'); return false;">
+                        <i class="fas fa-info-circle"></i> Détails
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 group hover-lift reveal" style="transition-delay:.2s;">
+                <div class="h-48 relative overflow-hidden">
+                    <img src="{% static 'images/tombola-avril.png' %}" alt="Tombola précédente" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div style="position:absolute;inset:0;background:linear-gradient(to top, rgba(17,24,39,.35) 0%, transparent 50%);"></div>
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg bg-gray-500 text-white">Terminée</span>
+                    </div>
+                    <div class="absolute bottom-4 left-4">
+                        <span style="background:var(--white);padding:.35rem .75rem;border-radius:999px;font-size:.8rem;font-weight:800;color:var(--amber);box-shadow:var(--shadow);">5 000 FCFA</span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 mb-2 group-hover:text-amber-700 transition">Tombola Avril 2025</h3>
+                    <p class="text-gray-500 text-sm mb-4 line-clamp-2">La précédente tombola est terminée. Félicitations aux 3 gagnants qui partent au Ghana cet été!</p>
+                    <div class="space-y-2 text-sm text-gray-500 mb-4">
+                        <div class="flex items-center gap-2"><i class="fas fa-users text-amber-500 w-4"></i><span>512 tickets vendus</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-calendar text-amber-500 w-4"></i><span>Tirage: 15 Avr 2025</span></div>
+                        <div class="flex items-center gap-2"><i class="fas fa-trophy text-amber-500 w-4"></i><span>Gagnants annoncés</span></div>
+                    </div>
+                    <a href="#" class="btn btn-outline w-full justify-center" onclick="alert('Tombola exemple - Connectez-vous en tant que gestionnaire pour créer de vraies tombolas'); return false;">
+                        <i class="fas fa-trophy"></i> Voir les gagnants
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

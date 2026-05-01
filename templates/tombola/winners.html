@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Gagnants - {{ tombola.title }}{% endblock %}
+
+{% block content %}
+<section class="page-header" style="background:linear-gradient(135deg, #7c4a00 0%, var(--amber) 60%, #e8a020 100%);">
+    <div class="dot-pattern"></div>
+    <div class="container text-center relative" style="z-index:1;">
+        <i class="fas fa-crown text-5xl text-white/30 mb-4 fade-in-up"></i>
+        <h1 class="fade-in-up delay-1">Les Gagnants !</h1>
+        <p class="mt-2 text-lg fade-in-up delay-2" style="color:rgba(255,255,255,.7);">{{ tombola.title }}</p>
+    </div>
+</section>
+
+<section class="py-12 section-decorated">
+    <div class="max-w-4xl mx-auto px-4">
+        {% if winners %}
+        <div class="space-y-6">
+            {% for winner in winners %}
+            <div class="bg-white rounded-2xl p-6 md:p-8 shadow-lg border-2 border-amber-200 hover:border-amber-400 transition hover-lift reveal">
+                <div class="flex flex-col md:flex-row items-center gap-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-amber-400 to-orange-500 rounded-2xl flex items-center justify-center flex-shrink-0">
+                        {% if winner.prize_won %}
+                        <span class="text-3xl font-extrabold text-white">#{{ winner.prize_won.rank }}</span>
+                        {% else %}
+                        <i class="fas fa-trophy text-3xl text-white"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 text-center md:text-left">
+                        <h3 class="text-xl font-bold text-gray-900">{{ winner.participant.get_full_name|default:winner.participant.username }}</h3>
+                        <p class="text-gray-500 text-sm">Ticket: <span class="font-mono font-medium">{{ winner.ticket_number }}</span></p>
+                        {% if winner.prize_won %}
+                        <div class="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-800 rounded-xl font-medium">
+                            <i class="fas fa-gift"></i>
+                            <span>{{ winner.prize_won.title }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-20">
+            <i class="fas fa-hourglass-half text-5xl text-gray-300 mb-4"></i>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Tirage pas encore effectué</h3>
+            <p class="text-gray-500">Les gagnants seront annoncés après le tirage au sort.</p>
+        </div>
+        {% endif %}
+
+        <div class="text-center mt-10">
+            <a href="{% url 'tombola:list' %}" class="btn btn-amber">
+                <i class="fas fa-arrow-left"></i> Retour aux tombolas
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
