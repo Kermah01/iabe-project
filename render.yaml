@@ -2,7 +2,7 @@ services:
   - type: web
     name: iabe-platform
     env: python
-    buildCommand: "./build.sh"
+    buildCommand: "bash render-build.sh"
     startCommand: "gunicorn iabe_project.wsgi:application"
     envVars:
       - key: DEBUG
