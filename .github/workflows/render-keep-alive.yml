@@ -1,0 +1,41 @@
+# Garde éveillés les sites hébergés sur Render (offre gratuite) pendant les heures ouvrées.
+#
+# Render endort un service gratuit après 15 minutes sans visite ; le réveil prend ~1 minute.
+# Ce workflow visite les sites toutes les 5 minutes, du lundi au vendredi, de 08:00 à 19:00 UTC
+# (= heure d'Abidjan ; 09:00-20:00 à Paris en hiver).
+#
+# Pourquoi pas 24h/24 : l'offre gratuite de Render accorde 750 heures d'activité par mois
+# pour TOUT le compte (Ask for Data + IABE + e-SNDS). Deux sites éveillés en permanence
+# consommeraient ~1 490 h : le quota serait épuisé vers le 15 du mois et tous les services
+# gratuits (e-SNDS compris) seraient suspendus jusqu'au mois suivant.
+# Ce créneau consomme ~2 x 11 h x 23 jours ouvrés ≈ 506 h et laisse une marge pour e-SNDS.
+# Pour du 24h/24 sans risque : passer le service voulu en offre « Starter » sur Render.
+#
+# Les horaires GitHub peuvent avoir quelques minutes de retard : d'où un passage toutes les 5 min.
+# GitHub désactive les workflows planifiés après 60 jours sans activité sur le dépôt :
+# il suffit alors de cliquer « Enable workflow » / « Run workflow » dans l'onglet Actions.
+
+name: Keep-alive Render
+
+on:
+  schedule:
+    - cron: "2-59/5 8-18 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        url:
+          - https://ask-for-data-05go.onrender.com/
+          - https://iabe-platform.onrender.com/
+    steps:
+      - name: Visiter ${{ matrix.url }}
+        run: |
+          code=$(curl --silent --location --output /dev/null --write-out '%{http_code}' \
+                 --max-time 90 --retry 2 --retry-delay 10 "${{ matrix.url }}" || echo 000)
+          echo "HTTP ${code} — ${{ matrix.url }}"
+          case "$code" in 2*|3*) ;; *) exit 1 ;; esac
